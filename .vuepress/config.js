@@ -1,7 +1,7 @@
 module.exports = {
   title: "Blogs - Milo Wang",
   description: "Some nonsense notes.",
-  dest: "public",
+  dest: "dist",
   head: [
     [
       "link",
