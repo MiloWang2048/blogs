@@ -10,5 +10,8 @@
     "vuepress": "1.8.2",
     "vuepress-theme-reco": "1.6.6"
   },
-  "description": "Some nonsense notes."
+  "description": "Some nonsense notes.",
+  "dependencies": {
+    "cos-nodejs-sdk-v5": "^2.9.15"
+  }
 }
