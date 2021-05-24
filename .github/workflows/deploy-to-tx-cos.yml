@@ -21,4 +21,4 @@ jobs:
           yarn build
 
       - name: Deploy
-        run: sudo node deploy.js
+        run: node deploy.js
