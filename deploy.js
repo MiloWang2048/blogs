@@ -124,11 +124,17 @@ async function listFilesInPath(dirRelPath) {
 	return target;
 }
 
-(async function () {
+process.on("unhandledRejection", () => {
+	process.exit(-1);
+});
+
+async function deploy() {
 	const filesToDelete = await getAllFilesInBucket();
 	if (filesToDelete.length > 0) {
 		await deleteFiles(filesToDelete);
 	}
 	await uploadFiles(await listFilesInPath(distRelPath));
 	console.log(`Deployment accomplished.`);
-})();
+}
+
+deploy();
