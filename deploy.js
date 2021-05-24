@@ -1,26 +1,33 @@
 const COS = require("cos-nodejs-sdk-v5");
 const path = require("path");
 const fs = require("fs/promises");
-const distRelPath = require(path.resolve(__dirname, '.vuepress/config.js')).dest
-const { spawn } = require('child_process');
+const distRelPath = require(path.resolve(
+	__dirname,
+	".vuepress/config.js",
+)).dest;
+const { spawn } = require("child_process");
 
 const {
-    COS_SECRET_ID,
-    COS_SECRET_KEY,
-    COS_TARGET_BUCKET,
-    COS_BUCKET_REGION,
-    // CURRENT_COMMIT_ID
+	COS_SECRET_ID,
+	COS_SECRET_KEY,
+	COS_TARGET_BUCKET,
+	COS_BUCKET_REGION,
+	// CURRENT_COMMIT_ID
 } = process.env;
 
+assert(
+	COS_SECRET_ID && COS_SECRET_KEY && COS_TARGET_BUCKET && COS_BUCKET_REGION,
+);
+
 const cos = new COS({
-    SecretId: COS_SECRET_ID,
-    SecretKey: COS_SECRET_KEY
+	SecretId: COS_SECRET_ID,
+	SecretKey: COS_SECRET_KEY,
 });
 
 const bucketInfo = {
-    Bucket: COS_TARGET_BUCKET,
-    Region: COS_BUCKET_REGION
-}
+	Bucket: COS_TARGET_BUCKET,
+	Region: COS_BUCKET_REGION,
+};
 
 // async function getLastCommitId() {
 //     return await new Promise((resolve, reject) => {
@@ -56,63 +63,73 @@ const bucketInfo = {
 // }
 
 async function deleteFiles(files) {
-    return await new Promise((resolve, reject) => {
-        cos.deleteMultipleObject({
-            ...bucketInfo,
-            Objects: files,
-            Quiet: true
-        }, (err, data) => {
-            if (err) reject(err);
-            else resolve(data);
-        });
-    })
+	return await new Promise((resolve, reject) => {
+		cos.deleteMultipleObject(
+			{
+				...bucketInfo,
+				Objects: files,
+				Quiet: true,
+			},
+			(err, data) => {
+				if (err) reject(err);
+				else resolve(data);
+			},
+		);
+	});
 }
 
 async function uploadFiles(relPaths) {
-    const files = relPaths.map(i => ({
-        ...bucketInfo,
-        Key: i.substring(distRelPath.length),
-        FilePath: path.resolve(__dirname, i)
-    }))
-    return new Promise((resolve, reject) => {
-        cos.uploadFiles({
-            files,
-            SliceSize: 1024 * 1024,
-        }, function (err, data) {
-            if (err) reject(err);
-            else resolve(data);
-        });
-    })
+	const files = relPaths.map((i) => ({
+		...bucketInfo,
+		Key: i.substring(distRelPath.length),
+		FilePath: path.resolve(__dirname, i),
+	}));
+	return new Promise((resolve, reject) => {
+		cos.uploadFiles(
+			{
+				files,
+				SliceSize: 1024 * 1024,
+			},
+			function (err, data) {
+				if (err) reject(err);
+				else resolve(data);
+			},
+		);
+	});
 }
 
 async function getAllFilesInBucket() {
-    return await new Promise((resolve, reject) => {
-        cos.getBucket({
-            ...bucketInfo
-        }, (err, data) => {
-            if (err) reject(err);
-            else resolve(data.Contents.map(({ Key }) => ({ Key })))
-        });
-    })
+	return await new Promise((resolve, reject) => {
+		cos.getBucket(
+			{
+				...bucketInfo,
+			},
+			(err, data) => {
+				if (err) reject(err);
+				else resolve(data.Contents.map(({ Key }) => ({ Key })));
+			},
+		);
+	});
 }
 
 async function listFilesInPath(dirRelPath) {
-    const target = [];
-    for (const i of await fs.readdir(dirRelPath, { withFileTypes: true })) {
-        if (i.isDirectory()) {
-            target.push(...await listFilesInPath(path.posix.join(dirRelPath, i.name)))
-        } else {
-            target.push(path.posix.join(dirRelPath, i.name));
-        }
-    }
-    return target;
+	const target = [];
+	for (const i of await fs.readdir(dirRelPath, { withFileTypes: true })) {
+		if (i.isDirectory()) {
+			target.push(
+				...(await listFilesInPath(path.posix.join(dirRelPath, i.name))),
+			);
+		} else {
+			target.push(path.posix.join(dirRelPath, i.name));
+		}
+	}
+	return target;
 }
 
 (async function () {
-    const filesToDelete = await getAllFilesInBucket();
-    if (filesToDelete.length > 0) {
-        await deleteFiles(filesToDelete);
-    }
-    await uploadFiles(await listFilesInPath(distRelPath));
-})()
-
+	const filesToDelete = await getAllFilesInBucket();
+	if (filesToDelete.length > 0) {
+		await deleteFiles(filesToDelete);
+	}
+	await uploadFiles(await listFilesInPath(distRelPath));
+})();
