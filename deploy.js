@@ -15,9 +15,7 @@ const {
 	// CURRENT_COMMIT_ID
 } = process.env;
 
-assert(
-	COS_SECRET_ID && COS_SECRET_KEY && COS_TARGET_BUCKET && COS_BUCKET_REGION,
-);
+console.log(`Deploying to ${COS_TARGET_BUCKET}.`);
 
 const cos = new COS({
 	SecretId: COS_SECRET_ID,
@@ -132,4 +130,5 @@ async function listFilesInPath(dirRelPath) {
 		await deleteFiles(filesToDelete);
 	}
 	await uploadFiles(await listFilesInPath(distRelPath));
+	console.log(`Deployment accomplished.`);
 })();
