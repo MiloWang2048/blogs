@@ -6,7 +6,7 @@ categories:
 tags:
   - CI/CD
   - vuepress
-publish: false
+publish: true
 ---
 
 
@@ -78,6 +78,63 @@ yarn dev
 
 大致的流程是这样的：
 
-1. 每次在主分支上push时，如果commit message不包含`[skip ci]`，则进入CI流程
+1. 每次在主分支上push时进入CI流程
 2. 使用`yarn build`构建项目
 3. 构建好之后，调用腾讯云的接口将整个站点文件夹上传到存储桶里
+
+于是我们创建Github Action配置文件：
+
+```yml
+# .github/workflow/deploy-to-tx-cos.yml
+name: Deploy to Tencent COS
+
+# 在主分支提交、PR时启用CI
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  deploy:
+	# 在ubuntu-1804环境下运行
+    runs-on: ubuntu-18.04
+    steps:
+		# 首先checkout仓库
+      - uses: actions/checkout@v2
+		# 安装依赖并构建
+      - name: Build
+        run: |
+          yarn
+          yarn build
+		# 执行部署脚本，部署到服务器
+      - name: Deploy
+        run: sudo node deploy.js
+				env: 
+				# 为脚本的执行传入环境变量，这些属于隐私信息所以不能直接出现在仓库文件中，而应放在Secrets中统一访问。
+          - COS_SECRET_ID: ${{ secrets.COS_SECRET_ID }}
+          - COS_SECRET_KEY: ${{ secrets.COS_SECRET_KEY }}
+          - COS_TARGET_BUCKET: ${{ secrets.COS_TARGET_BUCKET }}
+          - COS_BUCKET_REGION: ${{ secrets.COS_BUCKET_REGION }}
+```
+
+这里简单展示一下`deploy.js`的结构，有兴趣的同学可以自行查看[源码](https://github.com/MiloWang2048/blogs/blob/master/deploy.js)：
+
+```js
+// deploy.js
+async function deleteFiles(files);
+async function uploadFiles(relPaths);
+async function getAllFilesInBucket();
+async function listFilesInPath(dirRelPath);
+(async function () {
+    const filesToDelete = await getAllFilesInBucket();
+    if (filesToDelete.length > 0) {
+        await deleteFiles(filesToDelete);
+    }
+    await uploadFiles(await listFilesInPath(distRelPath));
+})()
+```
+
+然后我们在github仓库设置页面的secrets标签下创建四个secret，分别代表腾讯云秘钥id、key、目标存储桶和存储桶所在地域：
+
+![设定Secrets](https://picgo-1258344804.cos.ap-chongqing.myqcloud.com/20210524233805.png)
