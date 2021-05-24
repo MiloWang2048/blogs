@@ -97,26 +97,30 @@ on:
 
 jobs:
   deploy:
-	# 在ubuntu-1804环境下运行
+# 在ubuntu-1804环境下运行
     runs-on: ubuntu-18.04
+# 为脚本的执行传入环境变量，这些属于隐私信息所以不能直接出现在仓库文件中，而应放在Secrets中统一访问。
+    env:
+      COS_SECRET_ID: ${{ secrets.COS_SECRET_ID }}
+      COS_SECRET_KEY: ${{ secrets.COS_SECRET_KEY }}
+      COS_TARGET_BUCKET: ${{ secrets.COS_TARGET_BUCKET }}
+      COS_BUCKET_REGION: ${{ secrets.COS_BUCKET_REGION }}
     steps:
-		# 首先checkout仓库
+# 首先checkout仓库
       - uses: actions/checkout@v2
-		# 安装依赖并构建
+# 安装依赖并构建
       - name: Build
         run: |
           yarn
           yarn build
-		# 执行部署脚本，部署到服务器
+# 执行部署脚本，部署到服务器
       - name: Deploy
-        run: sudo node deploy.js
-				env: 
-				# 为脚本的执行传入环境变量，这些属于隐私信息所以不能直接出现在仓库文件中，而应放在Secrets中统一访问。
-          - COS_SECRET_ID: ${{ secrets.COS_SECRET_ID }}
-          - COS_SECRET_KEY: ${{ secrets.COS_SECRET_KEY }}
-          - COS_TARGET_BUCKET: ${{ secrets.COS_TARGET_BUCKET }}
-          - COS_BUCKET_REGION: ${{ secrets.COS_BUCKET_REGION }}
+        run: node deploy.js
 ```
+
+::: warning
+又有一个坑：虽然github Actions的linux执行环境都有免密码的sudo，但是由于sudo相当于切换了用户，所以env中设置的环境变量会失效。如果需要使用env，则尽量不要使用sudo。如果必要，可以尝试手动`sudo -i`+`export ENV`。
+:::
 
 这里简单展示一下`deploy.js`的结构，有兴趣的同学可以自行查看[源码](https://github.com/MiloWang2048/blogs/blob/master/deploy.js)：
 
@@ -138,3 +142,38 @@ async function listFilesInPath(dirRelPath);
 然后我们在github仓库设置页面的secrets标签下创建四个secret，分别代表腾讯云秘钥id、key、目标存储桶和存储桶所在地域：
 
 ![设定Secrets](https://picgo-1258344804.cos.ap-chongqing.myqcloud.com/20210524233805.png)
+
+好了！提交并推送，一段时间后网站就已经被部署到了COS上。但是此时还不能访问，需要配置COS存储桶为一个静态网站。
+
+## 静态网站配置
+
+登录腾讯云COS控制台，找到你的存储桶，对基础配置-静态网站作如下配置：
+
+![存储桶基本配置](https://picgo-1258344804.cos.ap-chongqing.myqcloud.com/20210525005815.png)
+
+此时你就可以通过以上显示的域名正常访问了！ohhhhhhhhh！
+
+## 自定义域名、CDN、HTTPS over CDN
+
+我们还想要使用自己的域名访问博客，又要能够使用HTTPS，怎么办呢？有两种解决方案：
+
+- 买一台服务器，用nginx作反向代理
+- 使用云平台的CDN over HTTPS，这种方法需要我们申请一个证书。
+
+> [参考链接](https://cloud.tencent.com/document/product/436/11142)
+
+由于学生机IO不行，而我们的博客又全都是静态资源，所以这里采用CDN方式。首先打开域名配置做如下配置：
+
+![这里的域名要填你自己的](https://picgo-1258344804.cos.ap-chongqing.myqcloud.com/20210525010405.png)
+
+然后设置CNAME域名解析：
+
+![域名解析条目，我这个是milolab.cn下的blogs子域](https://picgo-1258344804.cos.ap-chongqing.myqcloud.com/20210525010544.png)
+
+然后去CDN控制台，申请TLS证书：
+
+![申请TLS证书](https://picgo-1258344804.cos.ap-chongqing.myqcloud.com/20210525011001.png)
+
+等待部署完成，就可以使用HTTPS访问了。
+
+![部署完成](https://picgo-1258344804.cos.ap-chongqing.myqcloud.com/20210525011514.png)
