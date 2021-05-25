@@ -15,8 +15,6 @@ const {
 	// CURRENT_COMMIT_ID
 } = process.env;
 
-console.info(`Deploying to ${COS_TARGET_BUCKET}.`);
-
 const cos = new COS({
 	SecretId: COS_SECRET_ID,
 	SecretKey: COS_SECRET_KEY,
@@ -130,6 +128,7 @@ process.on("unhandledRejection", err => {
 });
 
 async function deploy() {
+	console.info(`Deploying to ${COS_TARGET_BUCKET}.`);
 	const filesToDelete = await getAllFilesInBucket();
 	if (filesToDelete.length > 0) {
 		console.info("Deleting files:")
@@ -143,4 +142,4 @@ async function deploy() {
 	console.info(`Deployment accomplished.`);
 }
 
-// deploy();
+deploy();
