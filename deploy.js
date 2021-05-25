@@ -133,12 +133,12 @@ async function deploy() {
 	const filesToDelete = await getAllFilesInBucket();
 	if (filesToDelete.length > 0) {
 		console.info("Deleting files:")
-		filesToDelete.foreach(i => { console.log(i.Key) });
+		filesToDelete.forEach(i => { console.log(i.Key) });
 		await deleteFiles(filesToDelete);
 	}
 	const filesToUpload = await listFilesInPath(distRelPath)
 	console.info("Uploading files:");
-	filesToUpload.foreach(console.log);
+	filesToUpload.forEach(console.log);
 	await uploadFiles(filesToUpload);
 	console.info(`Deployment accomplished.`);
 }
