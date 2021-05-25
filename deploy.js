@@ -138,9 +138,9 @@ async function deploy() {
 	}
 	const filesToUpload = await listFilesInPath(distRelPath)
 	console.info("Uploading files:");
-	filesToUpload.forEach(console.log);
+	console.log(filesToUpload);
 	await uploadFiles(filesToUpload);
 	console.info(`Deployment accomplished.`);
 }
 
-deploy();
+// deploy();
