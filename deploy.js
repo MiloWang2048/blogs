@@ -15,7 +15,7 @@ const {
 	// CURRENT_COMMIT_ID
 } = process.env;
 
-console.log(`Deploying to ${COS_TARGET_BUCKET}.`);
+console.info(`Deploying to ${COS_TARGET_BUCKET}.`);
 
 const cos = new COS({
 	SecretId: COS_SECRET_ID,
@@ -131,10 +131,15 @@ process.on("unhandledRejection", () => {
 async function deploy() {
 	const filesToDelete = await getAllFilesInBucket();
 	if (filesToDelete.length > 0) {
+		console.info("Deleting files:")
+		filesToDelete.foreach(i => { console.log(i.Key) });
 		await deleteFiles(filesToDelete);
 	}
-	await uploadFiles(await listFilesInPath(distRelPath));
-	console.log(`Deployment accomplished.`);
+	const filesToUpload = await listFilesInPath(distRelPath)
+	console.info("Uploading files:");
+	filesToUpload.foreach(console.log);
+	await uploadFiles(filesToUpload);
+	console.info(`Deployment accomplished.`);
 }
 
 deploy();
