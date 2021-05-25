@@ -124,7 +124,8 @@ async function listFilesInPath(dirRelPath) {
 	return target;
 }
 
-process.on("unhandledRejection", () => {
+process.on("unhandledRejection", err => {
+	console.error(err);
 	process.exit(-1);
 });
 
