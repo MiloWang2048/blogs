@@ -13,12 +13,26 @@ jobs:
       COS_TARGET_BUCKET: ${{ secrets.COS_TARGET_BUCKET }}
       COS_BUCKET_REGION: ${{ secrets.COS_BUCKET_REGION }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Cache
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install
+        run: yarn
 
       - name: Build
-        run: |
-          yarn
-          yarn build
+        run: yarn build
 
       - name: Deploy
         run: node deploy.js
