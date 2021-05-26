@@ -3,7 +3,7 @@ const path = require("path");
 const fs = require("fs/promises");
 const distRelPath = require(path.resolve(
 	__dirname,
-	".vuepress/config.js",
+	"./blogs/.vuepress/config.js",
 )).dest;
 const { spawn } = require("child_process");
 
