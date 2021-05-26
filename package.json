@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "author": "milowang",
   "scripts": {
-    "dev": "vuepress dev .",
-    "build": "vuepress build ."
+    "dev": "vuepress dev blogs",
+    "build": "vuepress build blogs"
   },
   "devDependencies": {
     "vuepress": "1.8.2",
