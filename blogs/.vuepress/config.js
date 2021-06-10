@@ -17,6 +17,11 @@ module.exports = {
         content: "width=device-width,initial-scale=1,user-scalable=no",
       },
     ],
+    [
+      "script",
+      {},// baidu stats
+      'var _hmt = _hmt || [];(function() { var hm = document.createElement("script"); hm.src = "https://hm.baidu.com/hm.js?d56e9708c60d5a14ed1a824ef152b315"; var s = document.getElementsByTagName("script")[0]; s.parentNode.insertBefore(hm, s);})();'
+    ]
   ],
   theme: "reco",
   themeConfig: {
