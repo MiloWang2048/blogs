@@ -8,7 +8,7 @@ publish: false
 
 ## 需求定义
 
-版本：1.0
+版本：0.1
 
 file blast是一套文件分享系统。支持：
 
@@ -21,7 +21,7 @@ file blast是一套文件分享系统。支持：
   - 删除
   - 移动
 - 支持批量下载
-- 支持已知文件预览
+- 支持常见文件类型预览：jpg，png，gif，mp3，wav，pdf，mp4，mkv
 - 可以搜索文件名/目录名
 
 ## 设计
@@ -37,8 +37,34 @@ file blast是一套文件分享系统。支持：
   - 使用sa-token认证、鉴权
   - 使用mybatis plus作ORM
   - 部署在一个Java容器上
-- 使用mysql作主数据库，redis作缓存中间件
+- 使用mysql作主数据库
 - 使用docker-compose部署
 
-### 系统领域划分
+### 数据库结构
+
+当前版本数据库仅存储用户认证鉴权相关信息，所以结构比较简单：
+
+![就这么两个表](https://picgo-1258344804.cos.ap-chongqing.myqcloud.com/20210611163140.png)
+
+
+
+### 后端结构
+
+#### REST API
+
+标准返回结构：
+
+```json
+{
+    "err": null,
+    "msg": "ok",
+    "data": {}
+}
+```
+
+接口列表：
+
+- login
+- logout
+- 
 
