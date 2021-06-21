@@ -50,7 +50,7 @@ file blast是一套文件分享系统。支持：
 
 ### 后端结构
 
-#### REST API
+#### HTTP API
 
 标准返回结构：
 
@@ -62,9 +62,7 @@ file blast是一套文件分享系统。支持：
 }
 ```
 
-接口列表：
+设计风格：类似REST，路径结构为`domain/operation`，`query`请求
 
-- login
-- logout
-- 
+
 
