@@ -3,7 +3,7 @@ title: 重新认识REST API
 date: 2021-6-15
 categories:
   - Code style
-publish: false
+publish: true
 ---
 
 > 本文译自[What is REST (restfulapi.net)](https://restfulapi.net/)，旨在重新认识REST。
