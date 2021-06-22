@@ -1,5 +1,5 @@
 ---
-title: 基于注解的自动装配
+title: Spring笔记 - 基于注解的自动装配
 categories:
   - backend
   - famework&libraries

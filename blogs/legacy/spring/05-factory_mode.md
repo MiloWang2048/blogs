@@ -1,5 +1,5 @@
 ---
-title: 工厂模式
+title: Spring笔记 - 工厂模式
 categories:
   - backend
   - famework&libraries

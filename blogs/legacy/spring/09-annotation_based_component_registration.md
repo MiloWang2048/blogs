@@ -1,5 +1,5 @@
 ---
-title: 基于注解的自动组件注入
+title: Spring笔记 - 基于注解的自动组件注入
 categories:
   - backend
   - famework&libraries

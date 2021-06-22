@@ -1,5 +1,5 @@
 ---
-title: xml自动装配(autowire)
+title: Spring笔记 - xml自动装配(autowire)
 categories:
   - backend
   - famework&libraries

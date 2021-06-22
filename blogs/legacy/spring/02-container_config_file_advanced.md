@@ -1,5 +1,5 @@
 ---
-title: 容器配置文件的高级赋值方式
+title: Spring笔记 - 容器配置文件的高级赋值方式
 categories:
   - backend
   - famework&libraries

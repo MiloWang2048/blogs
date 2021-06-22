@@ -1,5 +1,5 @@
 ---
-title: 在容器中引用properties文件
+title: Spring笔记 - 在容器中引用properties文件
 categories:
   - backend
   - famework&libraries

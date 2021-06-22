@@ -1,5 +1,5 @@
 ---
-title: Spring AOP代理对象的类型
+title: Spring笔记 - Spring AOP代理对象的类型
 categories:
   - backend
   - famework&libraries
