@@ -1,5 +1,5 @@
 module.exports = {
-  title: "Blogs - Milo Wang",
+  title: "Blogs - Milo Wang（个人作品记录）",
   description: "Some nonsense notes.",
   dest: "dist",
   head: [
